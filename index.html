@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقرير اليومي للمبيعات</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Cairo', 'Arial', sans-serif; 
+            background-color: #f9fafb;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #1f2937;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .date-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .date-input {
+            padding: 10px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .day-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        
+        .tabs {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .tab-btn:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .tab-btn:hover:not(.active) {
+            background: #d1d5db;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-warning { background: #ea580c; color: white; }
+        .btn-purple { background: #9333ea; color: white; }
+        .btn-indigo { background: #4f46e5; color: white; }
+        .btn-yellow { background: #d97706; color: white; }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            border: 1px solid #d1d5db;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .editable-cell {
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            font-size: 1rem;
+        }
+        
+        .editable-cell:focus {
+            background: #f0f9ff;
+            outline: 2px solid #3b82f6;
+            border-radius: 4px;
+        }
+        
+        .total-row {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .formatted-number {
+            font-family: 'Courier New', monospace;
+            text-align: right;
+            direction: ltr;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-right: 4px solid;
+        }
+        
+        .summary-card.blue { border-color: #3b82f6; }
+        .summary-card.green { border-color: #10b981; }
+        .summary-card.orange { border-color: #f97316; }
+        
+        .summary-card .label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .summary-card.blue .value { color: #2563eb; }
+        .summary-card.green .value { color: #16a34a; }
+        .summary-card.orange .value { color: #ea580c; }
+        
+        .signatures {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .signatures h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.5rem;
+        }
+        
+        .signature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .signature-box {
+            text-align: center;
+            padding-top: 60px;
+            border-top: 2px solid #6b7280;
+        }
+        
+        .signature-box span {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons, .action-buttons {
+                flex-direction: column;
+            }
+            
+            .date-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>التقرير اليومي للمبيعات</h1>
+            <div class="date-section">
+                <div>
+                    <label style="font-weight: 600; margin-left: 10px;">التاريخ:</label>
+                    <input type="date" id="reportDate" class="date-input">
+                </div>
+                <div class="day-display">
+                    اليوم: <span id="dayNumber">1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs no-print">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('daily')">التقرير اليومي</button>
+                <button class="tab-btn" onclick="showTab('monthly')">التقرير الشهري</button>
+                <button class="tab-btn" onclick="showTab('debts')">المديونيات</button>
+                <button class="tab-btn" onclick="showTab('purchases')">المشتريات</button>
+                <button class="tab-btn" onclick="showTab('inventory')">المخزن</button>
+                <button class="tab-btn" onclick="showTab('suppliers')">الموردين</button>
+                <button class="tab-btn" onclick="showTab('summary')">الملخص الشهري</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="saveDailyToMonthly()">حفظ في التقرير الشهري</button>
+                <button class="btn btn-success" onclick="printReport()">طباعة التقرير</button>
+                <button class="btn btn-indigo" onclick="exportData()">تصدير البيانات</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button class="btn btn-yellow" onclick="document.getElementById('importFile').click()">استيراد البيانات</button>
+            </div>
+        </div>
+
+        <!-- Daily Report Content -->
+        <div id="dailyContent">
+            <!-- Sales and Data Grid -->
+            <div class="content-grid">
+                <!-- Sales Table -->
+                <div class="card">
+                    <div class="card-header">جدول المبيعات</div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الصنف</th>
+                                        <th>الكمية</th>
+                                        <th>السعر</th>
+                                        <th>الإجمالي</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTableBody">
+                                    <!-- Sales items will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="3">إجمالي المبيعات</td>
+                                        <td class="formatted-number" id="totalSales">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">العيش التالف</td>
+                                        <td><input type="number" class="editable-cell" id="damagedBread" value="0" step="0.01"></td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td colspan="3">صافي المبيعات</td>
+                                        <td class="formatted-number" id="netSales">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>عدد الجولات 1</td>
+                                        <td><input type="number" class="editable-cell" id="rounds1" value="0" step="1"></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>عدد الجولات 2</td>
+                                        <td><input type="number" class="editable-cell" id="rounds2" value="0" step="1"></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">إجمالي عدد الجولات</td>
+                                        <td class="formatted-number" id="totalRoundsDisplay">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expenses Table -->
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">جدول المنصرفات</div>
+                    <div class="card-content">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <input type="text" id="newExpenseItem" placeholder="بند منصرفات جديد" style="padding: 8px; border: 2px solid #d1d5db; border-radius: 6px; flex: 1; min-width: 200px;">
+                            <button class="btn btn-warning" onclick="addExpenseItem()" style="padding: 8px 16px;">إضافة بند</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>البند</th>
+                                        <th>المبلغ</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTableBody">
+                                    <!-- Expense items will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="2">إجمالي المنصرفات</td>
+                                        <td class="formatted-number" id="totalExpenses">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credit and Collection Tables -->
+            <div class="content-grid">
+                <!-- Credit Table -->
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #ea580c, #f97316);">جدول الأجل</div>
+                    <div class="card-content">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <input type="text" id="newCreditEntity" placeholder="جهة أجل جديدة" style="padding: 8px; border: 2px solid #d1d5db; border-radius: 6px; flex: 1; min-width: 200px;">
+                            <button class="btn btn-warning" onclick="addCreditEntity()" style="padding: 8px 16px;">إضافة جهة</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الجهة</th>
+                                        <th>المبلغ</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="creditTableBody">
+                                    <!-- Credit items will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="2">إجمالي الأجل</td>
+                                        <td class="formatted-number" id="totalCredit">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Table -->
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #059669, #10b981);">جدول التحصيل</div>
+                    <div class="card-content">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <input type="text" id="newCollectionEntity" placeholder="جهة تحصيل جديدة" style="padding: 8px; border: 2px solid #d1d5db; border-radius: 6px; flex: 1; min-width: 200px;">
+                            <button class="btn btn-success" onclick="addCollectionEntity()" style="padding: 8px 16px;">إضافة جهة</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الجهة</th>
+                                        <th>المبلغ</th>
+                                        <th>إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="collectionTableBody">
+                                    <!-- Collection items will be populated by JavaScript -->
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td colspan="2">إجمالي التحصيل</td>
+                                        <td class="formatted-number" id="totalCollection">0</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #6b7280, #9ca3af);">طرق الدفع (الرصيد المستلم)</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>بنكك</th>
+                                    <th>فوري</th>
+                                    <th>أوكاش</th>
+                                    <th>البنك الإسلامي</th>
+                                    <th>كاش</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="number" class="editable-cell" id="bankak" value="0" step="0.01"></td>
+                                    <td><input type="number" class="editable-cell" id="fawry" value="0" step="0.01"></td>
+                                    <td><input type="number" class="editable-cell" id="okash" value="0" step="0.01"></td>
+                                    <td><input type="number" class="editable-cell" id="islamicBank" value="0" step="0.01"></td>
+                                    <td><input type="number" class="editable-cell" id="cash" value="0" step="0.01"></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="4">إجمالي الرصيد المستلم</td>
+                                    <td class="formatted-number" id="totalReceived">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card blue">
+                    <div class="label">إجمالي المبيعات</div>
+                    <div class="value formatted-number" id="finalSales">0</div>
+                </div>
+                <div class="summary-card green">
+                    <div class="label">الرصيد المتوقع</div>
+                    <div class="value formatted-number" id="expectedBalance">0</div>
+                </div>
+                <div class="summary-card orange">
+                    <div class="label">فرق التحصيل</div>
+                    <div class="value formatted-number" id="collectionDifference">0</div>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="signatures">
+                <h2>التوقيعات</h2>
+                <div class="signature-grid">
+                    <div class="signature-box">
+                        <span>مسؤول المبيعات</span>
+                    </div>
+                    <div class="signature-box">
+                        <span>المحاسب</span>
+                    </div>
+                    <div class="signature-box">
+                        <span>المدير</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debts Content -->
+        <div id="debtsContent" class="hidden">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">ملخص المديونيات</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الجهة</th>
+                                    <th>إجمالي المبلغ</th>
+                                    <th>إجمالي التحصيل</th>
+                                    <th>المتبقي</th>
+                                    <th>الحالة</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="debtsSummaryBody">
+                                <!-- Debts summary will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entity Details Modal -->
+        <div id="entityModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 10px; width: 90%; max-width: 800px; max-height: 90%; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <div style="background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 20px; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="modalEntityName" style="margin: 0; font-size: 1.5rem;">كشف حساب الجهة</h2>
+                    <button onclick="closeEntityModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 5px;">×</button>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div class="summary-card blue" style="margin: 0;">
+                            <div class="label">إجمالي المبلغ</div>
+                            <div class="value formatted-number" id="modalTotalAmount">0</div>
+                        </div>
+                        <div class="summary-card green" style="margin: 0;">
+                            <div class="label">إجمالي التحصيل</div>
+                            <div class="value formatted-number" id="modalTotalCollection">0</div>
+                        </div>
+                        <div class="summary-card orange" style="margin: 0;">
+                            <div class="label">المتبقي</div>
+                            <div class="value formatted-number" id="modalRemaining">0</div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>المبلغ (أجل)</th>
+                                    <th>التحصيل</th>
+                                    <th>المتبقي</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalEntityDetails">
+                                <!-- Entity details will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td>الإجمالي</td>
+                                    <td class="formatted-number" id="modalFooterAmount">0</td>
+                                    <td class="formatted-number" id="modalFooterCollection">0</td>
+                                    <td class="formatted-number" id="modalFooterRemaining">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Report Content -->
+        <div id="monthlyContent" class="hidden">
+            <div class="card">
+                <div class="card-header">التقرير الشهري</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table style="font-size: 0.8rem;">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>عدد الجولات 1</th>
+                                    <th>عدد الجولات 2</th>
+                                    <th>إجمالي الجولات</th>
+                                    <th>صافي المبيعات</th>
+                                    <th>المنصرفات</th>
+                                    <th>الأجل</th>
+                                    <th>التحصيل</th>
+                                    <th>بنكك</th>
+                                    <th>فوري</th>
+                                    <th>أوكاش</th>
+                                    <th>البنك الإسلامي</th>
+                                    <th>كاش</th>
+                                    <th>إجمالي الرصيد</th>
+                                    <th>الرصيد المتوقع</th>
+                                    <th>فرق التحصيل</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyTableBody">
+                                <!-- Monthly data will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td>المجموع</td>
+                                    <td class="formatted-number" id="monthlyTotalRounds1">0</td>
+                                    <td class="formatted-number" id="monthlyTotalRounds2">0</td>
+                                    <td class="formatted-number" id="monthlyTotalAllRounds">0</td>
+                                    <td class="formatted-number" id="monthlyTotalSales">0</td>
+                                    <td class="formatted-number" id="monthlyTotalExpenses">0</td>
+                                    <td class="formatted-number" id="monthlyTotalCredit">0</td>
+                                    <td class="formatted-number" id="monthlyTotalCollection">0</td>
+                                    <td class="formatted-number" id="monthlyTotalBankak">0</td>
+                                    <td class="formatted-number" id="monthlyTotalFawry">0</td>
+                                    <td class="formatted-number" id="monthlyTotalOkash">0</td>
+                                    <td class="formatted-number" id="monthlyTotalIslamicBank">0</td>
+                                    <td class="formatted-number" id="monthlyTotalCash">0</td>
+                                    <td class="formatted-number" id="monthlyTotalReceived">0</td>
+                                    <td class="formatted-number" id="monthlyExpectedBalance">0</td>
+                                    <td class="formatted-number" id="monthlyCollectionDifference">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases Content -->
+        <div id="purchasesContent" class="hidden">
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">إضافة مشتريات جديدة</div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <input type="text" id="purchaseItem" placeholder="اسم الصنف" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <input type="number" id="purchaseQuantity" placeholder="الكمية" step="0.01" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <input type="number" id="purchasePrice" placeholder="السعر" step="0.01" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <select id="purchaseSupplier" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                                <option value="">اختر المورد</option>
+                                <option value="مورد الدقيق">مورد الدقيق</option>
+                                <option value="مورد الخضار">مورد الخضار</option>
+                                <option value="مورد اللحوم">مورد اللحوم</option>
+                                <option value="مورد الألبان">مورد الألبان</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-purple" onclick="addPurchase()">إضافة مشتريات</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">سجل المشتريات</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>الصنف</th>
+                                    <th>الكمية</th>
+                                    <th>السعر</th>
+                                    <th>الإجمالي</th>
+                                    <th>المورد</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchasesTableBody">
+                                <!-- Purchases will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="4">إجمالي المشتريات</td>
+                                    <td class="formatted-number" id="totalPurchases">0</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Content -->
+        <div id="inventoryContent" class="hidden">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #059669, #10b981);">إدارة المخزن</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الصنف</th>
+                                    <th>الكمية الحالية</th>
+                                    <th>الحد الأدنى</th>
+                                    <th>سعر الوحدة</th>
+                                    <th>إجمالي القيمة</th>
+                                    <th>الحالة</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <!-- Inventory will be populated by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="4">إجمالي قيمة المخزن</td>
+                                    <td class="formatted-number" id="totalInventoryValue">0</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suppliers Content -->
+        <div id="suppliersContent" class="hidden">
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">إضافة مورد جديد</div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                            <input type="text" id="supplierName" placeholder="اسم المورد" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <input type="text" id="supplierPhone" placeholder="رقم الهاتف" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <input type="text" id="supplierAddress" placeholder="العنوان" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                            <select id="supplierCategory" style="padding: 10px; border: 2px solid #d1d5db; border-radius: 8px;">
+                                <option value="">نوع المورد</option>
+                                <option value="دقيق ومخبوزات">دقيق ومخبوزات</option>
+                                <option value="خضار وفواكه">خضار وفواكه</option>
+                                <option value="لحوم ودواجن">لحوم ودواجن</option>
+                                <option value="ألبان ومنتجات">ألبان ومنتجات</option>
+                                <option value="مواد تنظيف">مواد تنظيف</option>
+                                <option value="سكر">سكر</option>
+                                <option value="زيت">زيت</option>
+                                <option value="سمسم">سمسم</option>
+                                <option value="ملح">ملح</option>
+                                <option value="سمولينا">سمولينا</option>
+                                <option value="أكياس تعبئة">أكياس تعبئة</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-warning" onclick="addSupplier()">إضافة مورد</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">قائمة الموردين</div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم المورد</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>العنوان</th>
+                                    <th>النوع</th>
+                                    <th>إجمالي المشتريات</th>
+                                    <th>آخر تعامل</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="suppliersTableBody">
+                                <!-- Suppliers will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Content -->
+        <div id="summaryContent" class="hidden">
+            <div class="summary-cards">
+                <div class="summary-card blue">
+                    <div class="label">إجمالي المبيعات الشهرية</div>
+                    <div class="value formatted-number" id="summaryTotalSales">0</div>
+                </div>
+                <div class="summary-card green">
+                    <div class="label">إجمالي المشتريات الشهرية</div>
+                    <div class="value formatted-number" id="summaryTotalPurchases">0</div>
+                </div>
+                <div class="summary-card orange">
+                    <div class="label">صافي الربح الشهري</div>
+                    <div class="value formatted-number" id="summaryNetProfit">0</div>
+                </div>
+            </div>
+            
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #4f46e5, #6366f1);">تحليل المبيعات</div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>الصنف</th>
+                                        <th>إجمالي الكمية المباعة</th>
+                                        <th>إجمالي المبيعات</th>
+                                        <th>متوسط السعر</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesAnalysisBody">
+                                    <!-- Sales analysis will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #059669, #10b981);">أفضل الموردين</div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>المورد</th>
+                                        <th>إجمالي المشتريات</th>
+                                        <th>عدد المعاملات</th>
+                                        <th>متوسط قيمة المعاملة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topSuppliersBody">
+                                    <!-- Top suppliers will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sales items data - جميع أنواع العيش
+        const salesItems = [
+            { name: 'فنقر عادي', price: 250 },
+            { name: 'بيرقر عادي', price: 250 },
+            { name: 'بيرقر جامبو سمسم', price: 400 },
+            { name: 'بيرقر جامبو عادي', price: 350 },
+            { name: 'بيرقر سمسم', price: 400 },
+            { name: 'بيرقر جامبو طلبيه', price: 500 },
+            { name: 'بيرقر عادي طلبيه', price: 350 },
+            { name: 'فنقر جامبو سمسم', price: 800 },
+            { name: 'فنقر جامبو عادي', price: 400 },
+            { name: 'فنقر غالب سمسم', price: 400 },
+            { name: 'فنقر غالب عادي', price: 350 },
+            { name: 'فنقر عادي سمسم', price: 400 },
+            { name: 'فنقر عادي طلبيه', price: 500 },
+            { name: 'كوكتيل عادي', price: 250 },
+            { name: 'كوكتيل طلبيه', price: 300 },
+            { name: 'كوكتيل نيلسون', price: 300 },
+            { name: 'بيرقر نيلسون', price: 400 },
+            { name: 'فنقر عادي 2', price: 250 },
+            { name: 'بيرقر عادي 2', price: 250 },
+            { name: 'كوكتيل عادي 2', price: 250 }
+        ];
+
+
+
+        // البنود الثابتة - محمية من الحذف
+        const fixedExpenseItems = [
+            'مياه', 'انتاج 1', 'يوميات 1', 'فطور', 'عشاء', 'ثلج', 'يوميات 2', 'انتاج 2'
+        ];
+
+        const fixedCreditEntities = [
+            'الرشيد',
+            'كسلا',
+            'نادي الضباط',
+            'فندق هلو',
+            'مروان',
+            'محمد ابراهيم',
+            'كابيتانو',
+            'نيرو',
+            'العريس',
+            'لارومي',
+            'عبد الله',
+            'بكري',
+            'الكنيسه'
+        ];
+
+        const fixedCollectionEntities = [
+            'الرشيد',
+            'كسلا',
+            'نادي الضباط',
+            'فندق هلو',
+            'مروان',
+            'محمد ابراهيم',
+            'كابيتانو',
+            'نيرو',
+            'العريس',
+            'لارومي',
+            'عبد الله',
+            'بكري',
+            'الكنيسه'
+        ];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reportDate').value = today;
+            updateDayNumber();
+            
+            // Initialize tables
+            initializeSalesTable();
+            initializeExpensesTable();
+            initializeCreditTable();
+            initializeCollectionTable();
+            
+            // Add event listeners
+            document.getElementById('reportDate').addEventListener('change', function() {
+                updateDayNumber();
+                loadDailyData(); // Load data when date changes
+            });
+            
+            // Add change listeners to all inputs
+            addCalculationListeners();
+            
+            // Load saved data for today
+            loadDailyData();
+            
+            // Initial calculation
+            updateCalculations();
+            updateMonthlyTable();
+            
+            // Initialize other modules
+            updateSupplierDropdown();
+            updatePurchasesTable();
+            updateInventoryTable();
+            updateSuppliersTable();
+            
+            // Auto-save every 30 seconds
+            setInterval(saveDailyData, 30000);
+            
+            // Save data before page unload
+            window.addEventListener('beforeunload', function() {
+                saveDailyData();
+            });
+        });
+
+        function updateDayNumber() {
+            const dateValue = document.getElementById('reportDate').value;
+            if (dateValue) {
+                // Parse the date correctly to avoid timezone issues
+                const dateParts = dateValue.split('-');
+                const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                document.getElementById('dayNumber').textContent = date.getDate();
+            }
+        }
+
+        function initializeSalesTable() {
+            const tbody = document.getElementById('salesTableBody');
+            tbody.innerHTML = '';
+            
+            salesItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${item.name}</td>
+                    <td><input type="number" class="editable-cell" id="item${index}" value="0" step="0.01"></td>
+                    <td>${formatNumber(item.price)}</td>
+                    <td class="formatted-number" id="item${index}Total">0</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function initializeExpensesTable() {
+            const tbody = document.getElementById('expensesTableBody');
+            tbody.innerHTML = '';
+            
+            // Load custom expense items from localStorage
+            const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            const allExpenses = [...fixedExpenseItems, ...customExpenses];
+            
+            allExpenses.forEach((item, index) => {
+                const isCustom = index >= fixedExpenseItems.length;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${item}</td>
+                    <td><input type="number" class="editable-cell" id="expense${index}" value="0" step="0.01"></td>
+                    <td>${isCustom ? `<button class="btn btn-warning" onclick="removeExpenseItem(${index})" style="padding: 4px 8px; font-size: 0.7rem;">حذف</button>` : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function initializeCreditTable() {
+            const tbody = document.getElementById('creditTableBody');
+            tbody.innerHTML = '';
+            
+            // Load custom credit entities from localStorage
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const allCredit = [...fixedCreditEntities, ...customCredit];
+            
+            allCredit.forEach((entity, index) => {
+                const isCustom = index >= fixedCreditEntities.length;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${entity}</td>
+                    <td><input type="number" class="editable-cell" id="credit${index}" value="0" step="0.01"></td>
+                    <td>${isCustom ? `<button class="btn btn-warning" onclick="removeCreditEntity(${index})" style="padding: 4px 8px; font-size: 0.7rem;">حذف</button>` : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function initializeCollectionTable() {
+            const tbody = document.getElementById('collectionTableBody');
+            tbody.innerHTML = '';
+            
+            // Load custom collection entities from localStorage
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCollection = [...fixedCollectionEntities, ...customCollection];
+            
+            allCollection.forEach((entity, index) => {
+                const isCustom = index >= fixedCollectionEntities.length;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="font-weight: 600;">${entity}</td>
+                    <td><input type="number" class="editable-cell" id="collection${index}" value="0" step="0.01"></td>
+                    <td>${isCustom ? `<button class="btn btn-warning" onclick="removeCollectionEntity(${index})" style="padding: 4px 8px; font-size: 0.7rem;">حذف</button>` : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function addCalculationListeners() {
+            // Add listeners to all input fields
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    updateCalculations();
+                    saveDailyData(); // Auto-save on every change
+                });
+                input.addEventListener('change', function() {
+                    updateCalculations();
+                    saveDailyData(); // Auto-save on every change
+                });
+            });
+        }
+
+        // Save daily data to localStorage
+        function saveDailyData() {
+            const reportDate = document.getElementById('reportDate').value;
+            if (!reportDate) return;
+            
+            const dailyData = {
+                date: reportDate,
+                salesData: [],
+                expensesData: [],
+                creditData: [],
+                collectionData: [],
+                damagedBread: parseFloat(document.getElementById('damagedBread').value) || 0,
+                rounds1: parseFloat(document.getElementById('rounds1').value) || 0,
+                rounds2: parseFloat(document.getElementById('rounds2').value) || 0,
+                bankak: parseFloat(document.getElementById('bankak').value) || 0,
+                fawry: parseFloat(document.getElementById('fawry').value) || 0,
+                okash: parseFloat(document.getElementById('okash').value) || 0,
+                islamicBank: parseFloat(document.getElementById('islamicBank').value) || 0,
+                cash: parseFloat(document.getElementById('cash').value) || 0
+            };
+            
+            // Save sales data
+            salesItems.forEach((item, index) => {
+                const input = document.getElementById(`item${index}`);
+                dailyData.salesData.push(input ? parseFloat(input.value) || 0 : 0);
+            });
+            
+            // Save expenses data
+            const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            const allExpenses = [...fixedExpenseItems, ...customExpenses];
+            allExpenses.forEach((item, index) => {
+                const input = document.getElementById(`expense${index}`);
+                dailyData.expensesData.push(input ? parseFloat(input.value) || 0 : 0);
+            });
+            
+            // Save credit data
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const allCredit = [...fixedCreditEntities, ...customCredit];
+            allCredit.forEach((entity, index) => {
+                const input = document.getElementById(`credit${index}`);
+                dailyData.creditData.push(input ? parseFloat(input.value) || 0 : 0);
+            });
+            
+            // Save collection data
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCollection = [...fixedCollectionEntities, ...customCollection];
+            allCollection.forEach((entity, index) => {
+                const input = document.getElementById(`collection${index}`);
+                dailyData.collectionData.push(input ? parseFloat(input.value) || 0 : 0);
+            });
+            
+            // Save to localStorage with date as key
+            localStorage.setItem(`dailyData_${reportDate}`, JSON.stringify(dailyData));
+        }
+        
+        // Load daily data from localStorage
+        function loadDailyData() {
+            const reportDate = document.getElementById('reportDate').value;
+            if (!reportDate) return;
+            
+            const savedData = localStorage.getItem(`dailyData_${reportDate}`);
+            if (!savedData) return;
+            
+            try {
+                const dailyData = JSON.parse(savedData);
+                
+                // Load sales data
+                if (dailyData.salesData) {
+                    salesItems.forEach((item, index) => {
+                        const input = document.getElementById(`item${index}`);
+                        if (input && dailyData.salesData[index] !== undefined) {
+                            input.value = dailyData.salesData[index];
+                        }
+                    });
+                }
+                
+                // Load expenses data
+                if (dailyData.expensesData) {
+                    const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+                    const allExpenses = [...fixedExpenseItems, ...customExpenses];
+                    allExpenses.forEach((item, index) => {
+                        const input = document.getElementById(`expense${index}`);
+                        if (input && dailyData.expensesData[index] !== undefined) {
+                            input.value = dailyData.expensesData[index];
+                        }
+                    });
+                }
+                
+                // Load credit data
+                if (dailyData.creditData) {
+                    const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+                    const allCredit = [...fixedCreditEntities, ...customCredit];
+                    allCredit.forEach((entity, index) => {
+                        const input = document.getElementById(`credit${index}`);
+                        if (input && dailyData.creditData[index] !== undefined) {
+                            input.value = dailyData.creditData[index];
+                        }
+                    });
+                }
+                
+                // Load collection data
+                if (dailyData.collectionData) {
+                    const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+                    const allCollection = [...fixedCollectionEntities, ...customCollection];
+                    allCollection.forEach((entity, index) => {
+                        const input = document.getElementById(`collection${index}`);
+                        if (input && dailyData.collectionData[index] !== undefined) {
+                            input.value = dailyData.collectionData[index];
+                        }
+                    });
+                }
+                
+                // Load other fields
+                if (dailyData.damagedBread !== undefined) {
+                    document.getElementById('damagedBread').value = dailyData.damagedBread;
+                }
+                if (dailyData.rounds1 !== undefined) {
+                    document.getElementById('rounds1').value = dailyData.rounds1;
+                }
+                if (dailyData.rounds2 !== undefined) {
+                    document.getElementById('rounds2').value = dailyData.rounds2;
+                }
+                if (dailyData.bankak !== undefined) {
+                    document.getElementById('bankak').value = dailyData.bankak;
+                }
+                if (dailyData.fawry !== undefined) {
+                    document.getElementById('fawry').value = dailyData.fawry;
+                }
+                if (dailyData.okash !== undefined) {
+                    document.getElementById('okash').value = dailyData.okash;
+                }
+                if (dailyData.islamicBank !== undefined) {
+                    document.getElementById('islamicBank').value = dailyData.islamicBank;
+                }
+                if (dailyData.cash !== undefined) {
+                    document.getElementById('cash').value = dailyData.cash;
+                }
+                
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات المحفوظة:', error);
+            }
+        }
+
+        function updateCalculations() {
+            let totalSales = 0;
+            
+            // Calculate sales totals
+            salesItems.forEach((item, index) => {
+                const quantity = parseFloat(document.getElementById(`item${index}`).value) || 0;
+                const total = quantity * item.price;
+                document.getElementById(`item${index}Total`).textContent = formatNumber(total);
+                totalSales += total;
+            });
+            
+            document.getElementById('totalSales').textContent = formatNumber(totalSales);
+            
+            // Calculate net sales
+            const damagedBread = parseFloat(document.getElementById('damagedBread').value) || 0;
+            const netSales = totalSales - damagedBread;
+            document.getElementById('netSales').textContent = formatNumber(netSales);
+            
+            // Calculate total rounds
+            const rounds1 = parseFloat(document.getElementById('rounds1').value) || 0;
+            const rounds2 = parseFloat(document.getElementById('rounds2').value) || 0;
+            const totalRounds = rounds1 + rounds2;
+            document.getElementById('totalRoundsDisplay').textContent = formatNumber(totalRounds);
+            
+            // Calculate expenses total
+            let totalExpenses = 0;
+            const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            const allExpenses = [...fixedExpenseItems, ...customExpenses];
+            allExpenses.forEach((item, index) => {
+                const expenseInput = document.getElementById(`expense${index}`);
+                if (expenseInput) {
+                    totalExpenses += parseFloat(expenseInput.value) || 0;
+                }
+            });
+            document.getElementById('totalExpenses').textContent = formatNumber(totalExpenses);
+            
+            // Calculate credit total
+            let totalCredit = 0;
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const allCredit = [...fixedCreditEntities, ...customCredit];
+            allCredit.forEach((entity, index) => {
+                const creditInput = document.getElementById(`credit${index}`);
+                if (creditInput) {
+                    totalCredit += parseFloat(creditInput.value) || 0;
+                }
+            });
+            document.getElementById('totalCredit').textContent = formatNumber(totalCredit);
+            
+            // Calculate collection total
+            let totalCollection = 0;
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCollection = [...fixedCollectionEntities, ...customCollection];
+            allCollection.forEach((entity, index) => {
+                const collectionInput = document.getElementById(`collection${index}`);
+                if (collectionInput) {
+                    totalCollection += parseFloat(collectionInput.value) || 0;
+                }
+            });
+            document.getElementById('totalCollection').textContent = formatNumber(totalCollection);
+            
+            // Calculate payment methods total
+            const bankak = parseFloat(document.getElementById('bankak').value) || 0;
+            const fawry = parseFloat(document.getElementById('fawry').value) || 0;
+            const okash = parseFloat(document.getElementById('okash').value) || 0;
+            const islamicBank = parseFloat(document.getElementById('islamicBank').value) || 0;
+            const cash = parseFloat(document.getElementById('cash').value) || 0;
+            const totalReceived = bankak + fawry + okash + islamicBank + cash;
+            document.getElementById('totalReceived').textContent = formatNumber(totalReceived);
+            
+            // Calculate final values
+            const expectedBalance = netSales - totalExpenses - totalCredit + totalCollection;
+            const collectionDifference = totalReceived - expectedBalance;
+            
+            // Update summary cards
+            document.getElementById('finalSales').textContent = formatNumber(netSales);
+            document.getElementById('expectedBalance').textContent = formatNumber(expectedBalance);
+            document.getElementById('collectionDifference').textContent = formatNumber(collectionDifference);
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('ar-EG').format(num);
+        }
+
+        // Functions for managing custom items
+        function addExpenseItem() {
+            const newItem = document.getElementById('newExpenseItem').value.trim();
+            if (!newItem) {
+                alert('يرجى إدخال اسم البند');
+                return;
+            }
+            
+            let customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            if (customExpenses.includes(newItem)) {
+                alert('هذا البند موجود بالفعل');
+                return;
+            }
+            
+            customExpenses.push(newItem);
+            localStorage.setItem('customExpenses', JSON.stringify(customExpenses));
+            document.getElementById('newExpenseItem').value = '';
+            
+            initializeExpensesTable();
+            addCalculationListeners();
+            alert('تم إضافة البند بنجاح');
+        }
+
+        function removeExpenseItem(index) {
+            const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            const allExpenses = [...fixedExpenseItems, ...customExpenses];
+            const itemName = allExpenses[index];
+            
+            if (confirm(`هل أنت متأكد من حذف "${itemName}"؟`)) {
+                const customIndex = index - fixedExpenseItems.length;
+                customExpenses.splice(customIndex, 1);
+                localStorage.setItem('customExpenses', JSON.stringify(customExpenses));
+                
+                initializeExpensesTable();
+                addCalculationListeners();
+                updateCalculations();
+            }
+        }
+
+        function addCreditEntity() {
+            const newEntity = document.getElementById('newCreditEntity').value.trim();
+            if (!newEntity) {
+                alert('يرجى إدخال اسم الجهة');
+                return;
+            }
+            
+            let customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            if (customCredit.includes(newEntity)) {
+                alert('هذه الجهة موجودة بالفعل');
+                return;
+            }
+            
+            customCredit.push(newEntity);
+            localStorage.setItem('customCredit', JSON.stringify(customCredit));
+            document.getElementById('newCreditEntity').value = '';
+            
+            initializeCreditTable();
+            addCalculationListeners();
+            alert('تم إضافة الجهة بنجاح');
+        }
+
+        function removeCreditEntity(index) {
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const allCredit = [...fixedCreditEntities, ...customCredit];
+            const entityName = allCredit[index];
+            
+            if (confirm(`هل أنت متأكد من حذف "${entityName}"؟`)) {
+                const customIndex = index - fixedCreditEntities.length;
+                customCredit.splice(customIndex, 1);
+                localStorage.setItem('customCredit', JSON.stringify(customCredit));
+                
+                initializeCreditTable();
+                addCalculationListeners();
+                updateCalculations();
+            }
+        }
+
+        function addCollectionEntity() {
+            const newEntity = document.getElementById('newCollectionEntity').value.trim();
+            if (!newEntity) {
+                alert('يرجى إدخال اسم الجهة');
+                return;
+            }
+            
+            let customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            if (customCollection.includes(newEntity)) {
+                alert('هذه الجهة موجودة بالفعل');
+                return;
+            }
+            
+            customCollection.push(newEntity);
+            localStorage.setItem('customCollection', JSON.stringify(customCollection));
+            document.getElementById('newCollectionEntity').value = '';
+            
+            initializeCollectionTable();
+            addCalculationListeners();
+            alert('تم إضافة الجهة بنجاح');
+        }
+
+        function removeCollectionEntity(index) {
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCollection = [...fixedCollectionEntities, ...customCollection];
+            const entityName = allCollection[index];
+            
+            if (confirm(`هل أنت متأكد من حذف "${entityName}"؟`)) {
+                const customIndex = index - fixedCollectionEntities.length;
+                customCollection.splice(customIndex, 1);
+                localStorage.setItem('customCollection', JSON.stringify(customCollection));
+                
+                initializeCollectionTable();
+                addCalculationListeners();
+                updateCalculations();
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all content
+            document.getElementById('dailyContent').classList.add('hidden');
+            document.getElementById('monthlyContent').classList.add('hidden');
+            document.getElementById('debtsContent').classList.add('hidden');
+            document.getElementById('purchasesContent').classList.add('hidden');
+            document.getElementById('inventoryContent').classList.add('hidden');
+            document.getElementById('suppliersContent').classList.add('hidden');
+            document.getElementById('summaryContent').classList.add('hidden');
+            
+            // Show selected content
+            document.getElementById(tabName + 'Content').classList.remove('hidden');
+            
+            // Update tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Load data for specific tabs
+            if (tabName === 'monthly') {
+                updateMonthlyTable();
+            } else if (tabName === 'debts') {
+                updateDebtsTable();
+            } else if (tabName === 'purchases') {
+                updatePurchasesTable();
+            } else if (tabName === 'inventory') {
+                updateInventoryTable();
+            } else if (tabName === 'suppliers') {
+                updateSuppliersTable();
+            } else if (tabName === 'summary') {
+                updateSummaryData();
+            }
+        }
+
+        function saveDailyToMonthly() {
+            const reportDate = document.getElementById('reportDate').value;
+            if (!reportDate) {
+                alert('يرجى تحديد تاريخ التقرير أولاً');
+                return;
+            }
+
+            const dayNumber = new Date(reportDate).getDate();
+            
+            // Force recalculation before saving to ensure accuracy
+            updateCalculations();
+            
+            // Calculate totals directly from inputs to ensure perfect synchronization
+            let totalSales = 0;
+            salesItems.forEach((item, index) => {
+                const quantity = parseFloat(document.getElementById(`item${index}`).value) || 0;
+                totalSales += quantity * item.price;
+            });
+            
+            let totalExpenses = 0;
+            const customExpenses = JSON.parse(localStorage.getItem('customExpenses') || '[]');
+            const allExpenses = [...fixedExpenseItems, ...customExpenses];
+            allExpenses.forEach((item, index) => {
+                totalExpenses += parseFloat(document.getElementById(`expense${index}`).value) || 0;
+            });
+            
+            let totalCredit = 0;
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const allCredit = [...fixedCreditEntities, ...customCredit];
+            allCredit.forEach((entity, index) => {
+                totalCredit += parseFloat(document.getElementById(`credit${index}`).value) || 0;
+            });
+            
+            let totalCollection = 0;
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCollection = [...fixedCollectionEntities, ...customCollection];
+            allCollection.forEach((entity, index) => {
+                totalCollection += parseFloat(document.getElementById(`collection${index}`).value) || 0;
+            });
+            
+            // Calculate payment methods total
+            const bankak = parseFloat(document.getElementById('bankak').value) || 0;
+            const fawry = parseFloat(document.getElementById('fawry').value) || 0;
+            const okash = parseFloat(document.getElementById('okash').value) || 0;
+            const islamicBank = parseFloat(document.getElementById('islamicBank').value) || 0;
+            const cash = parseFloat(document.getElementById('cash').value) || 0;
+            const totalReceived = bankak + fawry + okash + islamicBank + cash;
+            
+            // Get other values
+            const rounds1 = parseFloat(document.getElementById('rounds1').value) || 0;
+            const rounds2 = parseFloat(document.getElementById('rounds2').value) || 0;
+            const damagedBread = parseFloat(document.getElementById('damagedBread').value) || 0;
+            
+            // Calculate final values with exact same logic as daily report
+            const netSales = totalSales - damagedBread;
+            const expectedBalance = netSales - totalExpenses - totalCredit + totalCollection;
+            const collectionDifference = totalReceived - expectedBalance;
+
+            // Collect detailed data arrays
+            const salesData = [];
+            salesItems.forEach((item, index) => {
+                salesData.push(parseFloat(document.getElementById(`item${index}`).value) || 0);
+            });
+
+            const expensesData = [];
+            allExpenses.forEach((item, index) => {
+                expensesData.push(parseFloat(document.getElementById(`expense${index}`).value) || 0);
+            });
+
+            const creditData = [];
+            allCredit.forEach((entity, index) => {
+                creditData.push(parseFloat(document.getElementById(`credit${index}`).value) || 0);
+            });
+
+            const collectionData = [];
+            allCollection.forEach((entity, index) => {
+                collectionData.push(parseFloat(document.getElementById(`collection${index}`).value) || 0);
+            });
+
+            // Save to localStorage with all calculated values
+            let monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            monthlyData[dayNumber] = {
+                date: reportDate,
+                rounds1: rounds1,
+                rounds2: rounds2,
+                totalRounds: rounds1 + rounds2,
+                salesData: salesData,
+                expensesData: expensesData,
+                creditData: creditData,
+                collectionData: collectionData,
+                damagedBread: damagedBread,
+                totalSales: totalSales,
+                netSales: netSales,
+                totalExpenses: totalExpenses,
+                totalCredit: totalCredit,
+                totalCollection: totalCollection,
+                bankak: bankak,
+                fawry: fawry,
+                okash: okash,
+                islamicBank: islamicBank,
+                cash: cash,
+                totalReceived: totalReceived,
+                expectedBalance: expectedBalance,
+                collectionDifference: collectionDifference
+            };
+
+            localStorage.setItem('monthlyData', JSON.stringify(monthlyData));
+            alert('تم حفظ البيانات في التقرير الشهري بنجاح - جميع القيم متزامنة');
+            updateMonthlyTable();
+        }
+
+        function updateMonthlyTable() {
+            const tbody = document.getElementById('monthlyTableBody');
+            const monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            
+            tbody.innerHTML = '';
+            
+            let totals = {
+                rounds1: 0,
+                rounds2: 0,
+                totalRounds: 0,
+                netSales: 0,
+                totalExpenses: 0,
+                totalCredit: 0,
+                totalCollection: 0,
+                bankak: 0,
+                fawry: 0,
+                okash: 0,
+                islamicBank: 0,
+                cash: 0,
+                totalReceived: 0,
+                expectedBalance: 0,
+                collectionDifference: 0
+            };
+            
+            // Create 31 rows for the month
+            for (let day = 1; day <= 31; day++) {
+                const data = monthlyData[day] || {};
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${day}</td>
+                    <td class="formatted-number">${formatNumber(data.rounds1 || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.rounds2 || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalRounds || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.netSales || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalExpenses || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalCredit || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalCollection || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.bankak || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.fawry || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.okash || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.islamicBank || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.cash || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalReceived || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.expectedBalance || 0)}</td>
+                    <td class="formatted-number">${formatNumber(data.collectionDifference || 0)}</td>
+                `;
+                
+                tbody.appendChild(row);
+                
+                // Add to totals
+                totals.rounds1 += data.rounds1 || 0;
+                totals.rounds2 += data.rounds2 || 0;
+                totals.totalRounds += data.totalRounds || 0;
+                totals.netSales += data.netSales || 0;
+                totals.totalExpenses += data.totalExpenses || 0;
+                totals.totalCredit += data.totalCredit || 0;
+                totals.totalCollection += data.totalCollection || 0;
+                totals.bankak += data.bankak || 0;
+                totals.fawry += data.fawry || 0;
+                totals.okash += data.okash || 0;
+                totals.islamicBank += data.islamicBank || 0;
+                totals.cash += data.cash || 0;
+                totals.totalReceived += data.totalReceived || 0;
+                totals.expectedBalance += data.expectedBalance || 0;
+                totals.collectionDifference += data.collectionDifference || 0;
+            }
+            
+            // Update totals
+            document.getElementById('monthlyTotalRounds1').textContent = formatNumber(totals.rounds1);
+            document.getElementById('monthlyTotalRounds2').textContent = formatNumber(totals.rounds2);
+            document.getElementById('monthlyTotalAllRounds').textContent = formatNumber(totals.totalRounds);
+            document.getElementById('monthlyTotalSales').textContent = formatNumber(totals.netSales);
+            document.getElementById('monthlyTotalExpenses').textContent = formatNumber(totals.totalExpenses);
+            document.getElementById('monthlyTotalCredit').textContent = formatNumber(totals.totalCredit);
+            document.getElementById('monthlyTotalCollection').textContent = formatNumber(totals.totalCollection);
+            document.getElementById('monthlyTotalBankak').textContent = formatNumber(totals.bankak);
+            document.getElementById('monthlyTotalFawry').textContent = formatNumber(totals.fawry);
+            document.getElementById('monthlyTotalOkash').textContent = formatNumber(totals.okash);
+            document.getElementById('monthlyTotalIslamicBank').textContent = formatNumber(totals.islamicBank);
+            document.getElementById('monthlyTotalCash').textContent = formatNumber(totals.cash);
+            document.getElementById('monthlyTotalReceived').textContent = formatNumber(totals.totalReceived);
+            document.getElementById('monthlyExpectedBalance').textContent = formatNumber(totals.expectedBalance);
+            document.getElementById('monthlyCollectionDifference').textContent = formatNumber(totals.collectionDifference);
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function exportData() {
+            const data = {
+                monthlyData: JSON.parse(localStorage.getItem('monthlyData') || '{}'),
+                purchases: JSON.parse(localStorage.getItem('purchases') || '[]'),
+                inventory: JSON.parse(localStorage.getItem('inventory') || '[]'),
+                suppliers: JSON.parse(localStorage.getItem('suppliers') || '[]'),
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sales-report-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.monthlyData) {
+                        localStorage.setItem('monthlyData', JSON.stringify(data.monthlyData));
+                        updateMonthlyTable();
+                    }
+                    if (data.purchases) {
+                        localStorage.setItem('purchases', JSON.stringify(data.purchases));
+                        updatePurchasesTable();
+                    }
+                    if (data.inventory) {
+                        localStorage.setItem('inventory', JSON.stringify(data.inventory));
+                        updateInventoryTable();
+                    }
+                    if (data.suppliers) {
+                        localStorage.setItem('suppliers', JSON.stringify(data.suppliers));
+                        updateSuppliersTable();
+                        updateSupplierDropdown();
+                    }
+                    
+                    alert('تم استيراد البيانات بنجاح');
+                } catch (error) {
+                    alert('خطأ في قراءة الملف');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Purchases Management Functions
+        function addPurchase() {
+            const item = document.getElementById('purchaseItem').value;
+            const quantity = parseFloat(document.getElementById('purchaseQuantity').value) || 0;
+            const price = parseFloat(document.getElementById('purchasePrice').value) || 0;
+            const supplier = document.getElementById('purchaseSupplier').value;
+            
+            if (!item || !quantity || !price || !supplier) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            const purchase = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                item: item,
+                quantity: quantity,
+                price: price,
+                total: quantity * price,
+                supplier: supplier
+            };
+            
+            let purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            purchases.push(purchase);
+            localStorage.setItem('purchases', JSON.stringify(purchases));
+            
+            // Clear form
+            document.getElementById('purchaseItem').value = '';
+            document.getElementById('purchaseQuantity').value = '';
+            document.getElementById('purchasePrice').value = '';
+            document.getElementById('purchaseSupplier').value = '';
+            
+            updatePurchasesTable();
+            updateInventoryFromPurchase(purchase);
+            alert('تم إضافة المشتريات بنجاح');
+        }
+
+        function updatePurchasesTable() {
+            const tbody = document.getElementById('purchasesTableBody');
+            const purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            
+            tbody.innerHTML = '';
+            let total = 0;
+            
+            purchases.forEach(purchase => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${purchase.date}</td>
+                    <td>${purchase.item}</td>
+                    <td class="formatted-number">${formatNumber(purchase.quantity)}</td>
+                    <td class="formatted-number">${formatNumber(purchase.price)}</td>
+                    <td class="formatted-number">${formatNumber(purchase.total)}</td>
+                    <td>${purchase.supplier}</td>
+                    <td><button class="btn btn-warning" onclick="deletePurchase(${purchase.id})" style="padding: 5px 10px; font-size: 0.8rem;">حذف</button></td>
+                `;
+                tbody.appendChild(row);
+                total += purchase.total;
+            });
+            
+            document.getElementById('totalPurchases').textContent = formatNumber(total);
+        }
+
+        function deletePurchase(id) {
+            if (confirm('هل أنت متأكد من حذف هذه المشتريات؟')) {
+                let purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+                purchases = purchases.filter(p => p.id !== id);
+                localStorage.setItem('purchases', JSON.stringify(purchases));
+                updatePurchasesTable();
+            }
+        }
+
+        // Inventory Management Functions
+        function updateInventoryFromPurchase(purchase) {
+            let inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+            
+            const existingItem = inventory.find(item => item.name === purchase.item);
+            if (existingItem) {
+                existingItem.quantity += purchase.quantity;
+                existingItem.unitPrice = purchase.price; // Update with latest price
+            } else {
+                inventory.push({
+                    name: purchase.item,
+                    quantity: purchase.quantity,
+                    minQuantity: 10, // Default minimum
+                    unitPrice: purchase.price
+                });
+            }
+            
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            updateInventoryTable();
+        }
+
+        function updateInventoryTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+            
+            tbody.innerHTML = '';
+            let totalValue = 0;
+            
+            inventory.forEach((item, index) => {
+                const itemValue = item.quantity * item.unitPrice;
+                const status = item.quantity <= item.minQuantity ? 'نفاد' : 'متوفر';
+                const statusColor = item.quantity <= item.minQuantity ? 'color: red; font-weight: bold;' : 'color: green;';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td class="formatted-number">${formatNumber(item.quantity)}</td>
+                    <td><input type="number" value="${item.minQuantity}" onchange="updateMinQuantity(${index}, this.value)" style="width: 80px; padding: 5px; text-align: center;"></td>
+                    <td class="formatted-number">${formatNumber(item.unitPrice)}</td>
+                    <td class="formatted-number">${formatNumber(itemValue)}</td>
+                    <td style="${statusColor}">${status}</td>
+                    <td><button class="btn btn-warning" onclick="deleteInventoryItem(${index})" style="padding: 5px 10px; font-size: 0.8rem;">حذف</button></td>
+                `;
+                tbody.appendChild(row);
+                totalValue += itemValue;
+            });
+            
+            document.getElementById('totalInventoryValue').textContent = formatNumber(totalValue);
+        }
+
+        function updateMinQuantity(index, newMin) {
+            let inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+            inventory[index].minQuantity = parseFloat(newMin) || 0;
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            updateInventoryTable();
+        }
+
+        function deleteInventoryItem(index) {
+            if (confirm('هل أنت متأكد من حذف هذا الصنف من المخزن؟')) {
+                let inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+                inventory.splice(index, 1);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                updateInventoryTable();
+            }
+        }
+
+        // Suppliers Management Functions
+        function addSupplier() {
+            const name = document.getElementById('supplierName').value;
+            const phone = document.getElementById('supplierPhone').value;
+            const address = document.getElementById('supplierAddress').value;
+            const category = document.getElementById('supplierCategory').value;
+            
+            if (!name || !phone || !category) {
+                alert('يرجى ملء الحقول المطلوبة');
+                return;
+            }
+            
+            const supplier = {
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                address: address,
+                category: category,
+                totalPurchases: 0,
+                lastTransaction: new Date().toISOString().split('T')[0]
+            };
+            
+            let suppliers = JSON.parse(localStorage.getItem('suppliers') || '[]');
+            suppliers.push(supplier);
+            localStorage.setItem('suppliers', JSON.stringify(suppliers));
+            
+            // Clear form
+            document.getElementById('supplierName').value = '';
+            document.getElementById('supplierPhone').value = '';
+            document.getElementById('supplierAddress').value = '';
+            document.getElementById('supplierCategory').value = '';
+            
+            updateSuppliersTable();
+            updateSupplierDropdown();
+            alert('تم إضافة المورد بنجاح');
+        }
+
+        function updateSuppliersTable() {
+            const tbody = document.getElementById('suppliersTableBody');
+            const suppliers = JSON.parse(localStorage.getItem('suppliers') || '[]');
+            const purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            
+            tbody.innerHTML = '';
+            
+            suppliers.forEach((supplier, index) => {
+                // Calculate total purchases for this supplier
+                const supplierPurchases = purchases.filter(p => p.supplier === supplier.name);
+                const totalPurchases = supplierPurchases.reduce((sum, p) => sum + p.total, 0);
+                const lastTransaction = supplierPurchases.length > 0 ? 
+                    Math.max(...supplierPurchases.map(p => new Date(p.date).getTime())) : 
+                    new Date(supplier.lastTransaction).getTime();
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${supplier.name}</td>
+                    <td>${supplier.phone}</td>
+                    <td>${supplier.address || '-'}</td>
+                    <td>${supplier.category}</td>
+                    <td class="formatted-number">${formatNumber(totalPurchases)}</td>
+                    <td>${new Date(lastTransaction).toLocaleDateString('ar-EG')}</td>
+                    <td><button class="btn btn-warning" onclick="deleteSupplier(${index})" style="padding: 5px 10px; font-size: 0.8rem;">حذف</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteSupplier(index) {
+            if (confirm('هل أنت متأكد من حذف هذا المورد؟')) {
+                let suppliers = JSON.parse(localStorage.getItem('suppliers') || '[]');
+                suppliers.splice(index, 1);
+                localStorage.setItem('suppliers', JSON.stringify(suppliers));
+                updateSuppliersTable();
+                updateSupplierDropdown();
+            }
+        }
+
+        function updateSupplierDropdown() {
+            const select = document.getElementById('purchaseSupplier');
+            const suppliers = JSON.parse(localStorage.getItem('suppliers') || '[]');
+            
+            // Keep default options and add suppliers
+            select.innerHTML = `
+                <option value="">اختر المورد</option>
+                <option value="مورد الدقيق">مورد الدقيق</option>
+                <option value="مورد الخضار">مورد الخضار</option>
+                <option value="مورد اللحوم">مورد اللحوم</option>
+                <option value="مورد الألبان">مورد الألبان</option>
+            `;
+            
+            suppliers.forEach(supplier => {
+                const option = document.createElement('option');
+                option.value = supplier.name;
+                option.textContent = supplier.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Debts Management Functions
+        function updateDebtsTable() {
+            const tbody = document.getElementById('debtsSummaryBody');
+            const monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            
+            tbody.innerHTML = '';
+            
+            // Get all entities from both credit and collection
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCreditEntities = [...fixedCreditEntities, ...customCredit];
+            const allCollectionEntities = [...fixedCollectionEntities, ...customCollection];
+            
+            // Combine all entities (remove duplicates)
+            const allEntities = [...new Set([...allCreditEntities, ...allCollectionEntities])];
+            
+            allEntities.forEach(entityName => {
+                let totalCredit = 0;
+                let totalCollection = 0;
+                
+                // Calculate totals from monthly data
+                Object.values(monthlyData).forEach(dayData => {
+                    if (dayData.creditData && dayData.collectionData) {
+                        // Find entity index in credit
+                        const creditIndex = allCreditEntities.indexOf(entityName);
+                        if (creditIndex !== -1 && dayData.creditData[creditIndex]) {
+                            totalCredit += dayData.creditData[creditIndex];
+                        }
+                        
+                        // Find entity index in collection
+                        const collectionIndex = allCollectionEntities.indexOf(entityName);
+                        if (collectionIndex !== -1 && dayData.collectionData[collectionIndex]) {
+                            totalCollection += dayData.collectionData[collectionIndex];
+                        }
+                    }
+                });
+                
+                const remaining = totalCredit - totalCollection;
+                let status = '';
+                let statusColor = '';
+                
+                if (remaining > 0) {
+                    status = 'مدين';
+                    statusColor = 'color: red; font-weight: bold;';
+                } else if (remaining < 0) {
+                    status = 'دائن';
+                    statusColor = 'color: green; font-weight: bold;';
+                } else {
+                    status = 'متوازن';
+                    statusColor = 'color: blue; font-weight: bold;';
+                }
+                
+                // Only show entities that have transactions
+                if (totalCredit > 0 || totalCollection > 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-weight: 600;">${entityName}</td>
+                        <td class="formatted-number">${formatNumber(totalCredit)}</td>
+                        <td class="formatted-number">${formatNumber(totalCollection)}</td>
+                        <td class="formatted-number" style="${statusColor}">${formatNumber(Math.abs(remaining))}</td>
+                        <td style="${statusColor}">${status}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showEntityDetails('${entityName}')" style="padding: 5px 10px; font-size: 0.8rem;">
+                                كشف الحساب
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            });
+        }
+
+        function showEntityDetails(entityName) {
+            const monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            const customCredit = JSON.parse(localStorage.getItem('customCredit') || '[]');
+            const customCollection = JSON.parse(localStorage.getItem('customCollection') || '[]');
+            const allCreditEntities = [...fixedCreditEntities, ...customCredit];
+            const allCollectionEntities = [...fixedCollectionEntities, ...customCollection];
+            
+            // Set modal title
+            document.getElementById('modalEntityName').textContent = `كشف حساب - ${entityName}`;
+            
+            // Get entity indices
+            const creditIndex = allCreditEntities.indexOf(entityName);
+            const collectionIndex = allCollectionEntities.indexOf(entityName);
+            
+            // Populate modal table
+            const tbody = document.getElementById('modalEntityDetails');
+            tbody.innerHTML = '';
+            
+            let totalAmount = 0;
+            let totalCollection = 0;
+            let runningBalance = 0;
+            
+            // Sort dates and process chronologically
+            const sortedDays = Object.keys(monthlyData).sort((a, b) => {
+                const dateA = new Date(monthlyData[a].date);
+                const dateB = new Date(monthlyData[b].date);
+                return dateA - dateB;
+            });
+            
+            sortedDays.forEach(dayNumber => {
+                const dayData = monthlyData[dayNumber];
+                if (!dayData.date) return;
+                
+                let dayCredit = 0;
+                let dayCollection = 0;
+                
+                // Get credit amount for this day
+                if (creditIndex !== -1 && dayData.creditData && dayData.creditData[creditIndex]) {
+                    dayCredit = dayData.creditData[creditIndex];
+                }
+                
+                // Get collection amount for this day
+                if (collectionIndex !== -1 && dayData.collectionData && dayData.collectionData[collectionIndex]) {
+                    dayCollection = dayData.collectionData[collectionIndex];
+                }
+                
+                // Only show days with transactions
+                if (dayCredit > 0 || dayCollection > 0) {
+                    runningBalance += dayCredit - dayCollection;
+                    totalAmount += dayCredit;
+                    totalCollection += dayCollection;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(dayData.date).toLocaleDateString('ar-EG')}</td>
+                        <td class="formatted-number">${formatNumber(dayCredit)}</td>
+                        <td class="formatted-number">${formatNumber(dayCollection)}</td>
+                        <td class="formatted-number" style="${runningBalance > 0 ? 'color: red;' : runningBalance < 0 ? 'color: green;' : 'color: blue;'}">${formatNumber(Math.abs(runningBalance))}</td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            });
+            
+            // Update modal summary cards
+            document.getElementById('modalTotalAmount').textContent = formatNumber(totalAmount);
+            document.getElementById('modalTotalCollection').textContent = formatNumber(totalCollection);
+            document.getElementById('modalRemaining').textContent = formatNumber(Math.abs(totalAmount - totalCollection));
+            
+            // Update modal footer
+            document.getElementById('modalFooterAmount').textContent = formatNumber(totalAmount);
+            document.getElementById('modalFooterCollection').textContent = formatNumber(totalCollection);
+            document.getElementById('modalFooterRemaining').textContent = formatNumber(Math.abs(totalAmount - totalCollection));
+            
+            // Show modal
+            document.getElementById('entityModal').classList.remove('hidden');
+            document.getElementById('entityModal').style.display = 'flex';
+        }
+
+        function closeEntityModal() {
+            document.getElementById('entityModal').classList.add('hidden');
+            document.getElementById('entityModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('entityModal');
+            if (event.target === modal) {
+                closeEntityModal();
+            }
+        });
+
+        // Summary Functions
+        function updateSummaryData() {
+            const monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            const purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            
+            // Calculate monthly totals
+            let totalSales = 0;
+            let totalPurchases = 0;
+            
+            Object.values(monthlyData).forEach(day => {
+                totalSales += day.netSales || 0;
+            });
+            
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            purchases.forEach(purchase => {
+                const purchaseDate = new Date(purchase.date);
+                if (purchaseDate.getMonth() === currentMonth && purchaseDate.getFullYear() === currentYear) {
+                    totalPurchases += purchase.total;
+                }
+            });
+            
+            const netProfit = totalSales - totalPurchases;
+            
+            document.getElementById('summaryTotalSales').textContent = formatNumber(totalSales);
+            document.getElementById('summaryTotalPurchases').textContent = formatNumber(totalPurchases);
+            document.getElementById('summaryNetProfit').textContent = formatNumber(netProfit);
+            
+            updateSalesAnalysis();
+            updateTopSuppliers();
+        }
+
+        function updateSalesAnalysis() {
+            const tbody = document.getElementById('salesAnalysisBody');
+            const monthlyData = JSON.parse(localStorage.getItem('monthlyData') || '{}');
+            
+            tbody.innerHTML = '';
+            
+            const salesSummary = {};
+            
+            Object.values(monthlyData).forEach(day => {
+                if (day.salesData) {
+                    day.salesData.forEach((quantity, index) => {
+                        if (quantity > 0) {
+                            const item = salesItems[index];
+                            if (!salesSummary[item.name]) {
+                                salesSummary[item.name] = {
+                                    totalQuantity: 0,
+                                    totalSales: 0,
+                                    price: item.price
+                                };
+                            }
+                            salesSummary[item.name].totalQuantity += quantity;
+                            salesSummary[item.name].totalSales += quantity * item.price;
+                        }
+                    });
+                }
+            });
+            
+            Object.entries(salesSummary).forEach(([itemName, data]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${itemName}</td>
+                    <td class="formatted-number">${formatNumber(data.totalQuantity)}</td>
+                    <td class="formatted-number">${formatNumber(data.totalSales)}</td>
+                    <td class="formatted-number">${formatNumber(data.price)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTopSuppliers() {
+            const tbody = document.getElementById('topSuppliersBody');
+            const purchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+            
+            tbody.innerHTML = '';
+            
+            const supplierSummary = {};
+            
+            purchases.forEach(purchase => {
+                if (!supplierSummary[purchase.supplier]) {
+                    supplierSummary[purchase.supplier] = {
+                        totalPurchases: 0,
+                        transactionCount: 0
+                    };
+                }
+                supplierSummary[purchase.supplier].totalPurchases += purchase.total;
+                supplierSummary[purchase.supplier].transactionCount += 1;
+            });
+            
+            Object.entries(supplierSummary)
+                .sort(([,a], [,b]) => b.totalPurchases - a.totalPurchases)
+                .forEach(([supplierName, data]) => {
+                    const avgTransaction = data.totalPurchases / data.transactionCount;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${supplierName}</td>
+                        <td class="formatted-number">${formatNumber(data.totalPurchases)}</td>
+                        <td class="formatted-number">${formatNumber(data.transactionCount)}</td>
+                        <td class="formatted-number">${formatNumber(avgTransaction)}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'979da96f457be1f0',t:'MTc1Njk5MDc0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
